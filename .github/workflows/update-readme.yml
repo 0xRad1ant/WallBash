@@ -1,0 +1,38 @@
+name: Update README
+
+on:
+  push:
+    branches:
+      - main  # Change this to your default branch if it's different
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Update README.md
+      run: |
+        # Get all image files in the wallpapers directory
+        IMAGES=$(ls Wallbash/*.{jpg,jpeg,png,gif} 2>/dev/null)
+        
+        # Start creating the new content for README
+        CONTENT="# Wallpaper Library\n\n## Available Wallpapers\n\n"
+        
+        for IMAGE in $IMAGES; do
+          # Append image markdown to the content
+          CONTENT+="![]($IMAGE)  \n"
+        done
+        
+        # Write content to README.md
+        echo -e "$CONTENT" > README.md
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.name "github-actions"
+        git config --local user.email "github-actions@github.com"
+        git add README.md
+        git commit -m "Update README with new wallpapers" || echo "No changes to commit"
+        git push
